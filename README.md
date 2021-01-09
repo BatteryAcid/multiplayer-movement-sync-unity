@@ -1,4 +1,4 @@
-## DodgeballLearn1
+## Multiplayer Movement Sync - Unity
 
 This Unity project is used to demonstrate very basic multiplayer matchmaking and game play communication between the game clients and AWS using websockets.  
 
