@@ -2,9 +2,13 @@
 
 This Unity project is used to demonstrate very basic multiplayer matchmaking and game play communication between the game clients and AWS using websockets.  
 
+## Companion AWS Repository
+
+* https://github.com/BatteryAcid/multiplayer-movement-sync-aws
+
 ## Tutorial Video 
 
-* https://youtu.be/BljQ5FwQzis
+* TODO
 
 ## Dependencies
 
