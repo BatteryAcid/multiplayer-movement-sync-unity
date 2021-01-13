@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
    private PlayerPositionMessage playerPositionDriftCheckMessage;
    private Rigidbody _enemy;
    private long lagTime = -1;
+   private const float DriftThreshold = 0.5f;
 
    public int enemyPositionSequence = 0;
 
@@ -36,39 +37,41 @@ public class Enemy : MonoBehaviour
                // check this position after lag time below
                playerPositionDriftCheckMessage = enemyPositionToRender;
                lagTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - (long)enemyPositionToRender.timestamp;
-               StartCoroutine(CorrectDrift());
+               StartCoroutine(CheckForDrift());
             }
          }
       }
    }
 
-   private IEnumerator CorrectDrift()
+   private IEnumerator CheckForDrift()
    {
       float i = 0.0f;
+
+      // wait for the lag time to pass
       while (i < lagTime)
       {
          i += Time.deltaTime;
       }
 
+      // if our drift threshold is exceeded, perform correction
       float drift = Vector3.Distance(_enemy.position, playerPositionDriftCheckMessage.currentPos);
-      if (drift >= 0.5f)
+      if (drift >= DriftThreshold)
       {
-         Debug.Log("Drift detected ******************************");
-         // TODO: investigate how the time parameter effects the lerp - moving it to a full second doesn't seem to change much
-         StartCoroutine(MoveObject(_enemy.transform, _enemy.position, playerPositionDriftCheckMessage.currentPos, .2f));
+         // Debug.Log("Drift detected ******************************");
+         StartCoroutine(CorrectDrift(_enemy.transform, _enemy.position, playerPositionDriftCheckMessage.currentPos, .2f));
       }
+
+      // reset 
       lagTime = -1;
       yield return null;
    }
 
-   //TODO: look into cleaning this up
-   private IEnumerator MoveObject(Transform thisTransform, Vector3 startPos, Vector3 endPos, float time)
+   private IEnumerator CorrectDrift(Transform thisTransform, Vector3 startPos, Vector3 endPos, float correctionDuration)
    {
       float i = 0.0f;
-      float rate = 1.0f / time;
-      while (i < 1.0)
+      while (i < correctionDuration)
       {
-         i += Time.deltaTime * rate;
+         i += Time.deltaTime;
          thisTransform.position = Vector3.Lerp(startPos, endPos, i);
 
       }
