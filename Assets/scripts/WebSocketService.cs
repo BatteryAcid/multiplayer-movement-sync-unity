@@ -90,14 +90,6 @@ public class WebSocketService : Singleton<WebSocketService>
       }
    }
 
-   // Creates a websocket connection to the server and establishes the connection's lifecycle callbacks.
-   // Once the connection is established, OnOpen, it automatically attempts to create or join a game through the RequestStartOp code.
-   async public void FindMatch()
-   {
-      // waiting for messages
-      await _websocket.Connect();
-   }
-
    private void SetupWebsocketCallbacks()
    {
       _websocket.OnOpen += () =>
@@ -137,10 +129,18 @@ public class WebSocketService : Singleton<WebSocketService>
       };
    }
 
+   // Creates a websocket connection to the server and establishes the connection's lifecycle callbacks.
+   // Once the connection is established, OnOpen, it automatically attempts to create or join a game through the RequestStartOp code.
+   async public void FindMatch()
+   {
+      // waiting for messages
+      await _websocket.Connect();
+   }
+
    private void SendVectorAsMessage(Vector3 vector, string opCode, int seq)
    {
       SerializableVector3 posToSend = vector;
-      GameMessage posMessage = new PlayerPositionMessage("OnMessage", opCode, posToSend, new SerializableVector3(), 0, seq, "");
+      GameMessage posMessage = new PlayerPositionMessage("OnMessage", opCode, posToSend, new SerializableVector3(), 0, seq, "", localPlayerReference.position);
       posMessage.uuid = matchId;
       SendWebSocketMessage(JsonUtility.ToJson(posMessage));
    }
