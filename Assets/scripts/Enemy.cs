@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
-using System;
 
 public class Enemy : MonoBehaviour
 {
    private SortedList<int, PlayerPositionMessage> enemyPositionMessageQueue;
    private PlayerPositionMessage playerPositionDriftCheckMessage;
    private Rigidbody _enemy;
-   private long lagTime = -1;
    private const float DriftThreshold = 0.5f;
+   private float maxSpeed = 10;
 
    public int enemyPositionSequence = 0;
 
@@ -22,48 +21,40 @@ public class Enemy : MonoBehaviour
          PlayerPositionMessage enemyPositionToRender;
          Vector3 movementPlane = new Vector3(_enemy.velocity.x, 0, _enemy.velocity.z);
 
-         // Check if we have the next sequence to render & 
-         // Capping the speed/magnitude across network is critical to maintain smooth movement
-         if (enemyPositionMessageQueue.TryGetValue(enemyPositionSequence, out enemyPositionToRender) && movementPlane.magnitude <= 10)
+         // Check if we have the next sequence to render
+         if (enemyPositionMessageQueue.TryGetValue(enemyPositionSequence, out enemyPositionToRender))
          {
+            // get the previous message's position for drift check
+            PlayerPositionMessage previousEnemyPositionMessage;
+            if (enemyPositionSequence > 1 && enemyPositionMessageQueue.TryGetValue(enemyPositionSequence - 1, out previousEnemyPositionMessage))
+            {
+               // if our drift threshold is exceeded, perform correction
+               float drift = Vector3.Distance(_enemy.position, previousEnemyPositionMessage.currentPos);
+               if (drift >= DriftThreshold)
+               {
+                  // Debug.Log("Drift detected ******************************");
+                  StartCoroutine(CorrectDrift(_enemy.transform, _enemy.position, previousEnemyPositionMessage.currentPos, .2f));
+               }
+
+               // removes the previous message in queue now that we're done with the correction check
+               enemyPositionMessageQueue.Remove(enemyPositionToRender.seq - 1);
+            }
+
             _enemy.AddForce(enemyPositionToRender.velocity, ForceMode.VelocityChange);
 
             // Debug.Log("Rendered queue sequence number: " + enemyPositionSequence);
             enemyPositionSequence++;
-            enemyPositionMessageQueue.Remove(enemyPositionToRender.seq);
-
-            if (lagTime < 0)
-            {
-               // check this position after lag time below
-               playerPositionDriftCheckMessage = enemyPositionToRender;
-               lagTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - (long)enemyPositionToRender.timestamp;
-               StartCoroutine(CheckForDrift());
-            }
          }
       }
    }
 
-   private IEnumerator CheckForDrift()
+   void Update()
    {
-      float i = 0.0f;
-
-      // wait for the lag time to pass
-      while (i < lagTime)
+      // Capping the speed/magnitude across network is critical to maintain smooth movement
+      if (_enemy.velocity.magnitude > maxSpeed)
       {
-         i += Time.deltaTime;
+         _enemy.velocity = Vector3.ClampMagnitude(_enemy.velocity, maxSpeed);
       }
-
-      // if our drift threshold is exceeded, perform correction
-      float drift = Vector3.Distance(_enemy.position, playerPositionDriftCheckMessage.currentPos);
-      if (drift >= DriftThreshold)
-      {
-         // Debug.Log("Drift detected ******************************");
-         StartCoroutine(CorrectDrift(_enemy.transform, _enemy.position, playerPositionDriftCheckMessage.currentPos, .2f));
-      }
-
-      // reset 
-      lagTime = -1;
-      yield return null;
    }
 
    private IEnumerator CorrectDrift(Transform thisTransform, Vector3 startPos, Vector3 endPos, float correctionDuration)

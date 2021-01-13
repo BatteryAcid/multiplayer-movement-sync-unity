@@ -6,7 +6,6 @@ public class PlayerMovementController : MonoBehaviour
    public Rigidbody player;
    public Rigidbody ball;
    public Transform playerCamera;
-   public float maxSpeed = 10;
    public float baseBallThrust = 20.0f;
 
    private float _throwKeyPressedStartTime;
@@ -15,6 +14,7 @@ public class PlayerMovementController : MonoBehaviour
    private float inputHorX, inputVertY;
    private bool firstZeroReceivedInARow = false;
    private bool playerIdle = false;
+   private float maxSpeed = 10;
 
    private void PlayerMovement(float x, float y)
    {
@@ -30,21 +30,17 @@ public class PlayerMovementController : MonoBehaviour
          // need to clamp camera rotation to x/z only and not y vertical 
          Vector3 playerMovementWithCameraRotation = Quaternion.LookRotation(camRotation) * playerMovementRotation;
 
-         // limit player's movement speed
-         if (player.velocity.magnitude <= maxSpeed)
+         // rounded to two decimal places
+         Vector3 roundedVelocity
+            = new Vector3(Mathf.Round(playerMovementWithCameraRotation.x * 100f) / 100f, 0f, Mathf.Round(playerMovementWithCameraRotation.z * 100f) / 100f);
+
+         // Debug.Log("velocity to send: " + roundedVelocity.ToString("f6"));
+
+         player.AddForce(roundedVelocity, ForceMode.VelocityChange);
+
+         if (WebSocketService.Instance.matchInitialized)
          {
-            // rounded to two decimal places
-            Vector3 roundedVelocity
-               = new Vector3(Mathf.Round(playerMovementWithCameraRotation.x * 100f) / 100f, 0f, Mathf.Round(playerMovementWithCameraRotation.z * 100f) / 100f);
-
-            // Debug.Log("velocity to send: " + roundedVelocity.ToString("f6"));
-
-            player.AddForce(roundedVelocity, ForceMode.VelocityChange);
-
-            if (WebSocketService.Instance.matchInitialized)
-            {
-               WebSocketService.Instance.SendVelocity(roundedVelocity);
-            }
+            WebSocketService.Instance.SendVelocity(roundedVelocity);
          }
       }
    }
@@ -74,6 +70,12 @@ public class PlayerMovementController : MonoBehaviour
 
    void Update()
    {
+      // limit player speed
+      if (player.velocity.magnitude > maxSpeed)
+      {
+         player.velocity = Vector3.ClampMagnitude(player.velocity, maxSpeed);
+      }
+
       inputHorX = Input.GetAxis("Horizontal");
       inputVertY = Input.GetAxis("Vertical");
       // actual player update is performed in FixedUpdate
