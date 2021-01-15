@@ -8,8 +8,10 @@ This Unity project is used to demonstrate very basic multiplayer matchmaking and
 
 ## Tutorial Video 
 
-* TODO
+* https://youtu.be/cMGLFkG1iDg  
 
 ## Dependencies
 
-* NativeWebSocket - a lightweight library for handling the websocket connection: https://github.com/endel/NativeWebSocket
+* NativeWebSocket - a lightweight library for handling the websocket connection: https://github.com/endel/NativeWebSocket  
+
+* Grass and stone textures - https://twitter.com/Julio_Sillet  
