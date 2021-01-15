@@ -90,6 +90,8 @@ public class WebSocketService : Singleton<WebSocketService>
       }
    }
 
+   // Establishes the connection's lifecycle callbacks.
+   // Once the connection is established, OnOpen, it automatically attempts to create or join a game through the RequestStartOp code.
    private void SetupWebsocketCallbacks()
    {
       _websocket.OnOpen += () =>
@@ -129,8 +131,7 @@ public class WebSocketService : Singleton<WebSocketService>
       };
    }
 
-   // Creates a websocket connection to the server and establishes the connection's lifecycle callbacks.
-   // Once the connection is established, OnOpen, it automatically attempts to create or join a game through the RequestStartOp code.
+   // Connects to the websocket
    async public void FindMatch()
    {
       // waiting for messages
