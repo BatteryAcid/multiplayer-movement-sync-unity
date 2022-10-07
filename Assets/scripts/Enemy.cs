@@ -23,8 +23,7 @@ public class Enemy : MonoBehaviour
             PlayerPositionMessage enemyPositionToRender;
             Vector3 movementPlane = new Vector3(_enemy.velocity.x, 0, _enemy.velocity.z);
 
-            Debug.Log(enemyPositionMessageQueue.IndexOfKey(50));
-
+            // Only handle the latest message in the queue.
             if (enemyPositionMessageQueue.Keys.Count > 0)
             {
                 enemyPositionSequence = enemyPositionMessageQueue.Keys[enemyPositionMessageQueue.Keys.Count - 1];
@@ -39,10 +38,11 @@ public class Enemy : MonoBehaviour
                     float drift = Vector3.Distance(_enemy.position, previousEnemyPositionMessage.currentPos);
                     if (drift >= DriftThreshold)
                     {
-                        Debug.Log("Drift detected ******************************");
+                        //Debug.Log("Drift detected ******************************");
                         StartCoroutine(CorrectDrift(_enemy.transform, _enemy.position, previousEnemyPositionMessage.currentPos, .2f));
                     }
-                    enemyPositionMessageQueue.Remove(enemyPositionToRender.seq - 1);
+                    //enemyPositionMessageQueue.Remove(enemyPositionToRender.seq - 1);
+                    enemyPositionMessageQueue.Clear();
                 }
 
                 previousEnemyPositionMessage = (PlayerPositionMessage)enemyPositionToRender.Clone();
@@ -51,6 +51,8 @@ public class Enemy : MonoBehaviour
 
 
             }
+
+            
         }
     }
 
@@ -70,9 +72,6 @@ public class Enemy : MonoBehaviour
         {
             i += Time.deltaTime;
             thisTransform.position = Vector3.Lerp(startPos, endPos, i);
-            //Debug.Log(startPos);
-            //Debug.Log(endPos);
-            Debug.Log(Vector3.Lerp(startPos, endPos, i));
 
         }
         yield return null;
