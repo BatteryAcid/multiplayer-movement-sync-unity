@@ -18,4 +18,9 @@ public class PlayerPositionMessage : GameMessage
       player = playerIn;
       currentPos = currentPosIn;
    }
+
+    public object Clone()
+    {
+        return this.MemberwiseClone();
+    }
 }
