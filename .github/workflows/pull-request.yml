@@ -1,4 +1,4 @@
-name: Pulumi
+name: Pulumi-pull-request
 on:
   - pull_request
 defaults:
