@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using NativeWebSocket;
+using System.IO;
+using UnityEditor;
 
 public class WebSocketService : Singleton<WebSocketService>
 {
@@ -12,7 +14,7 @@ public class WebSocketService : Singleton<WebSocketService>
    private string matchId;
    private int playerMovementMessageSequence = 0;
    private WebSocket _websocket;
-   private string _webSocketDns = "wss://0fv43osqn4.execute-api.us-east-1.amazonaws.com/demo-stage-2022-2";
+   private string _webSocketDns;
 
    public const string FirstToJoinOp = "0";
    public const string RequestStartOp = "1";
@@ -27,8 +29,19 @@ public class WebSocketService : Singleton<WebSocketService>
    public string playerNum;
    public string enemyNum;
 
-   // All messages received through the websocket connection are processed here
-   private void ProcessReceivedMessage(string message)
+    [MenuItem("Tools/Read file")]
+    private void SetAwsApi()
+    {
+        string path = "Assets/Resources/aws-api.txt";
+        //Read the text from directly from the aws-api.txt file
+        StreamReader reader = new StreamReader(path);
+        _webSocketDns = reader.ReadLine();
+        reader.Close();
+    }
+
+
+    // All messages received through the websocket connection are processed here
+    private void ProcessReceivedMessage(string message)
    {
       GameMessage gameMessage = JsonUtility.FromJson<GameMessage>(message);
 
@@ -195,6 +208,7 @@ public class WebSocketService : Singleton<WebSocketService>
       _websocket = new WebSocket(_webSocketDns);
       _playerColorService = FindObjectOfType<PlayerColorService>();
 
+        SetAwsApi();
       SetupWebsocketCallbacks();
       FindMatch();
    }

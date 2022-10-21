@@ -695,7 +695,6 @@ MonoBehaviour:
   player: {fileID: 664415448}
   ball: {fileID: 1223457543}
   playerCamera: {fileID: 963194228}
-  maxSpeed: 10
   baseBallThrust: 20
 --- !u!54 &664415448
 Rigidbody:
@@ -1387,8 +1386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 073126159d3394fba8344296608e6c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemy: {fileID: 1029094488}
-  enemyPositionSequence: 0
+  enemyPositionSequence: 13
 --- !u!1 &1142448880
 GameObject:
   m_ObjectHideFlags: 0
