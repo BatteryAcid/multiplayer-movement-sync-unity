@@ -25,6 +25,6 @@ jobs:
         with:
           command: preview
           stack-name: dev
-          working-directory: Pulumi
+          work-dir: Pulumi
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
