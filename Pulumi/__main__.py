@@ -201,6 +201,10 @@ for i in range(len(lambdaFunctionKeys)):
     
 pulumi.export("gameWebsocketApiStage" + namingSuffix, value=gameWebsocketApiStage.invoke_url)
 
-f = open("../Unity/Assets/Resources/aws-api.txt", "w")
-f.write(gameWebsocketApiStage.invoke_url)
-f.close()
+gameWebsocketApiStage.invoke_url.apply(lambda v: writeApiUrlToFile(v))
+
+
+def writeApiUrlToFile(api_url):
+    f = open("../Unity/Assets/Resources/aws-api.txt", "w")
+    f.write(api_url)
+    f.close()
