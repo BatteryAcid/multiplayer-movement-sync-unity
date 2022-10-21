@@ -1,0 +1,1 @@
+wss://5omemohy72.execute-api.us-east-1.amazonaws.com/gameWebsocketApiStage-2022-pulumi
