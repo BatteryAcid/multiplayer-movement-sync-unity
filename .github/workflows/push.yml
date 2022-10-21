@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - master
 defaults:
   run:
     working-directory: Pulumi
