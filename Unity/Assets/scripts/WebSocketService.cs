@@ -29,13 +29,13 @@ public class WebSocketService : Singleton<WebSocketService>
    public string playerNum;
    public string enemyNum;
 
-    [MenuItem("Tools/Read file")]
     private void SetAwsApi()
     {
         string path = "Assets/Resources/aws-api.txt";
         //Read the text from directly from the aws-api.txt file
         StreamReader reader = new StreamReader(path);
         _webSocketDns = reader.ReadLine();
+        Debug.Log(_webSocketDns);
         reader.Close();
     }
 
@@ -200,15 +200,16 @@ public class WebSocketService : Singleton<WebSocketService>
    void Start()
    {
       Debug.Log("Websocket start");
+        SetAwsApi();
 
-      intentionalClose = false;
+        intentionalClose = false;
       _statusController = FindObjectOfType<StatusController>();
       _menu = FindObjectOfType<Menu>();
       _enemyPositionHandler = FindObjectOfType<EnemyPositionHandler>();
       _websocket = new WebSocket(_webSocketDns);
       _playerColorService = FindObjectOfType<PlayerColorService>();
 
-        SetAwsApi();
+   
       SetupWebsocketCallbacks();
       FindMatch();
    }
